@@ -1,0 +1,5 @@
+
+
+# map is shared memory
+# process communique with message queue
+# process update map with semaphore to avoid concurrent problem
