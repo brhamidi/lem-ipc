@@ -9,6 +9,9 @@
 # include <ctype.h>
 # include <unistd.h>
 # include <errno.h>
+# include <sys/mman.h>
+# include <ncurses.h>
+# include <string.h>
 
 # define MAP_SIZE	10
 # define SHM_NAME	"/lemipc"

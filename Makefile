@@ -2,6 +2,7 @@ CC	= gcc
 NAME	= lemipc
 CFLAGS	= -Werror -Wextra -Wall -O2
 CFLAGS	+= -lrt
+CFLAGS	+= -lncurses
 
 SRC_PATH	= src/
 INCLUDE_PATH	= include/
@@ -16,7 +17,7 @@ INCLUDES=$(addprefix $(INCLUDE_PATH), $(INCLUDE))
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) -o $@
+	$(CC) $(CFLAGS) $(OBJS) -o $@
 
 $(SRC_PATH)%.o: $(SRC_PATH)%.c $(INCLUDES) Makefile
 	$(CC) $(CFLAGS) -I $(INCLUDE_PATH) -c $< -o $@
