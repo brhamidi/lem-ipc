@@ -1,12 +1,12 @@
-
 CC	= gcc
 NAME	= lemipc
-COFLAGS	= -Werror -Wextra -Wall -O2
+CFLAGS	= -Werror -Wextra -Wall -O2
+CFLAGS	+= -lrt
 
 SRC_PATH	= src/
 INCLUDE_PATH	= include/
 
-OBJ		= main.o
+OBJ		= main.o get_number.o print_map.o
 
 INCLUDE	= lemipc.h
 
@@ -19,7 +19,7 @@ $(NAME): $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) -o $@
 
 $(SRC_PATH)%.o: $(SRC_PATH)%.c $(INCLUDES) Makefile
-	$(CC) $(COFLAGS) -I $(INCLUDE_PATH) -c $< -o $@
+	$(CC) $(CFLAGS) -I $(INCLUDE_PATH) -c $< -o $@
 
 clean:
 	rm -f $(OBJS)

@@ -3,5 +3,17 @@
 
 # include <stdio.h>
 # include <stdlib.h>
+# include <sys/mman.h>
+# include <sys/stat.h>
+# include <fcntl.h>
+# include <ctype.h>
+# include <unistd.h>
+# include <errno.h>
+
+# define MAP_SIZE	10
+# define SHM_NAME	"/lemipc"
+
+int	get_number(const char *str);
+void	print_map(int fd);
 
 #endif
