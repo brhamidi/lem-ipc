@@ -1,5 +1,3 @@
-
-
 #include "lemipc.h"
 
 
@@ -13,7 +11,7 @@ int	main(int ac, char **av)
 		dprintf(2, "usage: %s TEAMNUMBER\n", av[0]);
 		exit(EXIT_FAILURE);
 	}
-	if ((number = get_number(av[1])) == -1)
+	if (MAP_SIZE > 50 ||((number = get_number(av[1])) == -1))
 	{
 		dprintf(2, "Error: bad team number\n");
 		exit(EXIT_FAILURE);
