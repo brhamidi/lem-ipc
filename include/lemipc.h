@@ -13,10 +13,11 @@
 # include <ncurses.h>
 # include <string.h>
 
-# define MAP_SIZE	10
+# define MAP_SIZE	15
 # define SHM_NAME	"/lemipc"
 
 int	get_number(const char *str);
-void	print_map(int fd);
+void	print_map(char *str);
+void	run(int fd);
 
 #endif

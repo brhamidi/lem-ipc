@@ -23,11 +23,12 @@ int	main(int ac, char **av)
 		if (errno == EEXIST)
 		{
 			printf("shm already open so just play\n");
+			sleep(1);
 			fd = shm_open(SHM_NAME, O_RDWR, 0644);
 			if (fd == -1)
 				perror("shm_open: ");
 			else
-				print_map(fd);
+				printf("player not yet implemented\n");
 			return (0);
 		}
 		else
@@ -41,7 +42,7 @@ int	main(int ac, char **av)
 		perror("ftruncate: ");
 		exit(EXIT_FAILURE);
 	}
-	print_map(fd);
+	run(fd);
 	sleep(15);
 	if (shm_unlink(SHM_NAME) == -1)
 	{
