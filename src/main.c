@@ -28,7 +28,7 @@ int	main(int ac, char **av)
 			if (fd == -1)
 				perror("shm_open: ");
 			else
-				printf("player not yet implemented\n");
+				game(number, fd);
 			return (0);
 		}
 		else
@@ -37,13 +37,12 @@ int	main(int ac, char **av)
 			exit(EXIT_FAILURE);
 		}
 	}
-	if (ftruncate(fd, MAP_SIZE * MAP_SIZE) == -1)
+	if (ftruncate(fd, (MAP_SIZE * MAP_SIZE) + sizeof(sem_t)) == -1)
 	{
 		perror("ftruncate: ");
 		exit(EXIT_FAILURE);
 	}
 	run(fd);
-	sleep(15);
 	if (shm_unlink(SHM_NAME) == -1)
 	{
 		perror("shm_unlink: ");

@@ -9,7 +9,10 @@ void	print_map(char *ptr)
 	{
 		if (i && i % MAP_SIZE == 0)
 			printf("\n");
-		printf("%d ", ptr[i]);
+		if (ptr[i] == -1)
+			printf("_ ");
+		else
+			printf("%d ", ptr[i]);
 		++i;
 	}
 	printf("\n");
@@ -33,8 +36,7 @@ void	run(int fd)
 		perror("mmap: ");
 		return;
 	}
-	memset(ptr, 0, MAP_SIZE * MAP_SIZE);
-	//TODO fork process to handle display and player process
+	memset(ptr, -1, MAP_SIZE * MAP_SIZE);
 	loop(ptr);
 	if (munmap(ptr, MAP_SIZE * MAP_SIZE))
 		perror("mmap: ");

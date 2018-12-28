@@ -2,12 +2,13 @@ CC	= gcc
 NAME	= lemipc
 CFLAGS	= -Werror -Wextra -Wall -O2
 CFLAGS	+= -lrt
+CFLAGS	+= -pthread
 CFLAGS	+= -lncurses
 
 SRC_PATH	= src/
 INCLUDE_PATH	= include/
 
-OBJ		= main.o get_number.o print_map.o
+OBJ		= main.o get_number.o print_map.o game.o
 
 INCLUDE	= lemipc.h
 
