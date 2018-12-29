@@ -1,9 +1,6 @@
-
-
 #include "lemipc.h"
 
-
-int	ft_strmap(const char *str, int (*f)(int))
+static int	ft_strmap(const char *str, int (*f)(int))
 {
 	if (!*str)
 		return (0);
@@ -12,7 +9,7 @@ int	ft_strmap(const char *str, int (*f)(int))
 	return (ft_strmap(str + 1, f));
 }
 
-int	get_number(const char *str)
+int		get_number(const char *str)
 {
 	int	number;
 

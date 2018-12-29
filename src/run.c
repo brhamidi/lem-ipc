@@ -1,6 +1,6 @@
 #include "lemipc.h"
 
-void	print_map(char *ptr)
+static void	print_map(char *ptr)
 {
 	int	i;
 
@@ -19,7 +19,7 @@ void	print_map(char *ptr)
 	printf("\n");
 }
 
-void	loop(void *ptr)
+static void	loop(void *ptr)
 {
 	print_map((char *)ptr);
 	sleep(1);

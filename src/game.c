@@ -1,6 +1,6 @@
 #include "lemipc.h"
 
-int	find_place(char *ptr, int number, int value, sem_t *sem)
+static int	find_place(char *ptr, int number, int value, sem_t *sem)
 {
 	int	i;
 
@@ -29,7 +29,7 @@ int	find_place(char *ptr, int number, int value, sem_t *sem)
 	return (1);
 }
 
-void	game(int number, int fd)
+void		game(int number, int fd)
 {
 	void	*ptr;
 	sem_t	*sem;
