@@ -15,6 +15,8 @@
 # include <string.h>
 # include <time.h>
 # include <semaphore.h>
+# include <sys/ipc.h>
+# include <sys/msg.h>
 
 # define MAP_SIZE	30
 # define SHM_NAME	"/lemipc"

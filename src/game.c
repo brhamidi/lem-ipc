@@ -34,7 +34,6 @@ void		game(int number, int fd)
 	void	*ptr;
 	sem_t	*sem;
 
-	printf("team %d playing\n", number);
 	srand(time(NULL));
 	if ((ptr = mmap(0, MAP_SIZE * MAP_SIZE, PROT_READ | PROT_WRITE,
 					MAP_SHARED, fd, 0)) == MAP_FAILED)
@@ -51,9 +50,9 @@ void		game(int number, int fd)
 		return;
 	}
 	if (find_place((char *)ptr, number, rand() % (MAP_SIZE * MAP_SIZE), sem))
-		printf("no place found so i cant play!");
+		printf("no place found so can t play!\n");
 	else
-		printf("wip\n");
+		printf("Playing .. \n");
 	if (sem_destroy(sem))
 		perror("sem_destroy: ");
 	if (munmap(ptr, MAP_SIZE * MAP_SIZE))
