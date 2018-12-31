@@ -24,5 +24,8 @@
 int	get_number(const char *str);
 void	run(int fd);
 void	game(int number, int fd);
+void	init(void);
+void	clean(void);
+void	print(char *str);
 
 #endif
