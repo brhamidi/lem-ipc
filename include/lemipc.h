@@ -21,6 +21,17 @@
 # define MAP_SIZE	20
 # define SHM_NAME	"/lemipc"
 
+typedef struct s_proc	t_proc;
+
+struct s_proc
+{
+	void	*ptr;
+	sem_t	*sem;
+	key_t	key;
+	int	msqid;
+	int	number;
+};
+
 int	get_number(const char *str);
 void	run(int fd);
 void	game(int number, int fd);

@@ -29,32 +29,64 @@ static int	find_place(char *ptr, int number, int value, sem_t *sem)
 	return (1);
 }
 
-void		game(int number, int fd)
+static int	init_e(t_proc *e, int number, int fd)
 {
-	void	*ptr;
-	sem_t	*sem;
-
 	srand(time(NULL));
-	if ((ptr = mmap(0, MAP_SIZE * MAP_SIZE, PROT_READ | PROT_WRITE,
+	if ((e->ptr = mmap(0, MAP_SIZE * MAP_SIZE, PROT_READ | PROT_WRITE,
 					MAP_SHARED, fd, 0)) == MAP_FAILED)
 	{
 		perror("mmap: ");
-		return;
+		return 1;
 	}
-	sem = ptr + (MAP_SIZE * MAP_SIZE);
-	if (sem_init(sem, 1, 1) == -1)
+	e->sem = e->ptr + (MAP_SIZE * MAP_SIZE);
+	if (sem_init(e->sem, 1, 1) == -1)
 	{
 		perror("sem_init: ");
-		if (munmap(ptr, MAP_SIZE * MAP_SIZE))
+		if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
 			perror("mmap: ");
-		return;
+		return 1;
 	}
-	if (find_place((char *)ptr, number, rand() % (MAP_SIZE * MAP_SIZE), sem))
-		printf("no place found so can t play!\n");
-	else
-		printf("Playing .. \n");
-	if (sem_destroy(sem))
+	e->number = number;
+	if ((e->key = ftok("msgq.txt", 42)) == -1)
+	{
+		perror("ftok: ");
+		if (sem_destroy(e->sem))
+			perror("sem_destroy: ");
+		if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
+			perror("mmap: ");
+		return (1);
+	}
+	if ((e->msqid = msgget(e->key, 0644)) == -1)
+	{
+		perror("msgget: ");
+		if (sem_destroy(e->sem))
+			perror("sem_destroy: ");
+		if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
+			perror("mmap: ");
+		return (1);
+	}
+	return (0);
+}
+
+static void	close_e(t_proc *e)
+{
+	if (msgctl(e->msqid, IPC_RMID, NULL) == -1)
+		perror("msgctl: ");
+	if (sem_destroy(e->sem))
 		perror("sem_destroy: ");
-	if (munmap(ptr, MAP_SIZE * MAP_SIZE))
+	if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
 		perror("mmap: ");
+}
+
+void		game(int number, int fd)
+{
+	t_proc	e;
+
+	if (init_e(&e, number, fd))
+		return;
+	if (find_place((char *)e.ptr, number, rand()%(MAP_SIZE * MAP_SIZE), e.sem))
+		dprintf(2, "Error: No place found so can t play!\n");
+	else
+		printf("..\n");
+	close_e(&e);
 }
