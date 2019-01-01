@@ -70,8 +70,6 @@ static int	init_e(t_proc *e, int number, int fd)
 
 static void	close_e(t_proc *e)
 {
-	if (msgctl(e->msqid, IPC_RMID, NULL) == -1)
-		perror("msgctl: ");
 	if (sem_destroy(e->sem))
 		perror("sem_destroy: ");
 	if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
@@ -87,6 +85,6 @@ void		game(int number, int fd)
 	if (find_place((char *)e.ptr, number, rand()%(MAP_SIZE * MAP_SIZE), e.sem))
 		dprintf(2, "Error: No place found so can t play!\n");
 	else
-		printf("..\n");
+		printf("Playing ..\n");
 	close_e(&e);
 }
