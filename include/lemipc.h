@@ -18,7 +18,7 @@
 # include <sys/ipc.h>
 # include <sys/msg.h>
 
-# define MAP_SIZE	30
+# define MAP_SIZE	20
 # define SHM_NAME	"/lemipc"
 
 int	get_number(const char *str);
