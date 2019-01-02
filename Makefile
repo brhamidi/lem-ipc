@@ -8,7 +8,7 @@ CFLAGS	+= -lncurses
 SRC_PATH	= src/
 INCLUDE_PATH	= include/
 
-OBJ		= main.o get_number.o run.o game.o display.o
+OBJ		= main.o get_number.o run.o game.o display.o play.o
 
 INCLUDE	= lemipc.h
 

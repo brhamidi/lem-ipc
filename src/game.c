@@ -1,34 +1,5 @@
 #include "lemipc.h"
 
-static int	find_place(char *ptr, int number, int value, sem_t *sem)
-{
-	int	i;
-
-	i = value;
-	while (i < MAP_SIZE * MAP_SIZE)
-	{
-		if (ptr[i] == -1)
-		{
-			if (sem_wait(sem) == 1)
-			{
-				perror("sem_wait: ");
-				return (1);
-			}
-			ptr[i] = number;
-			if (sem_post(sem) == 1)
-			{
-				perror("sem_post: ");
-				return (1);
-			}
-			return (0);
-		}
-		++i;
-	}
-	if (value != 0)
-		return (find_place(ptr, number, 0, sem));
-	return (1);
-}
-
 static int	init_e(t_proc *e, int number, int fd)
 {
 	srand(time(NULL));
@@ -76,6 +47,35 @@ static void	close_e(t_proc *e)
 		perror("mmap: ");
 }
 
+static int	find_place(char *ptr, int number, int value, sem_t *sem)
+{
+	int	i;
+
+	i = value;
+	while (i < MAP_SIZE * MAP_SIZE)
+	{
+		if (ptr[i] == -1)
+		{
+			if (sem_wait(sem) == 1)
+			{
+				perror("sem_wait: ");
+				return (1);
+			}
+			ptr[i] = number;
+			if (sem_post(sem) == 1)
+			{
+				perror("sem_post: ");
+				return (1);
+			}
+			return (0);
+		}
+		++i;
+	}
+	if (value != 0)
+		return (find_place(ptr, number, 0, sem));
+	return (1);
+}
+
 void		game(int number, int fd)
 {
 	t_proc	e;
@@ -85,6 +85,6 @@ void		game(int number, int fd)
 	if (find_place((char *)e.ptr, number, rand()%(MAP_SIZE * MAP_SIZE), e.sem))
 		dprintf(2, "Error: No place found so can t play!\n");
 	else
-		printf("Playing ..\n");
+		play(&e);
 	close_e(&e);
 }

@@ -38,5 +38,6 @@ void	game(int number, int fd);
 void	init(void);
 void	clean(void);
 void	print(char *str);
+void	play(t_proc *e);
 
 #endif
