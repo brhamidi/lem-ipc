@@ -44,6 +44,8 @@ int	main(int ac, char **av)
 		perror("sem_open: ");
 	else
 		run(fd);
+	if (sem_unlink(SHM_NAME) == -1)
+		perror("sem_unlink: ");
 	if (shm_unlink(SHM_NAME) == -1)
 	{
 		perror("shm_unlink: ");
