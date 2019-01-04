@@ -12,10 +12,9 @@ static int	init_e(t_proc *e, int number, int fd)
 		perror("mmap: ");
 		return 1;
 	}
-	e->sem = e->ptr + (MAP_SIZE * MAP_SIZE);
-	if (sem_init(e->sem, 1, 1) == -1)
+	if ((e->sem = sem_open(SHM_NAME, O_RDWR)) == SEM_FAILED)
 	{
-		perror("sem_init: ");
+		perror("sem_open: ");
 		if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
 			perror("mmap: ");
 		return 1;
@@ -44,8 +43,6 @@ static int	init_e(t_proc *e, int number, int fd)
 
 static void	close_e(t_proc *e)
 {
-	if (sem_destroy(e->sem))
-		perror("sem_destroy: ");
 	if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
 		perror("mmap: ");
 }

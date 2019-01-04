@@ -34,12 +34,16 @@ int	main(int ac, char **av)
 			exit(EXIT_FAILURE);
 		}
 	}
-	if (ftruncate(fd, (MAP_SIZE * MAP_SIZE) + sizeof(sem_t)) == -1)
+	if (ftruncate(fd, (MAP_SIZE * MAP_SIZE)) == -1)
 	{
 		perror("ftruncate: ");
+		shm_unlink(SHM_NAME);
 		exit(EXIT_FAILURE);
 	}
-	run(fd);
+	if (sem_open(SHM_NAME, O_CREAT, 0644, 1) == SEM_FAILED)
+		perror("sem_open: ");
+	else
+		run(fd);
 	if (shm_unlink(SHM_NAME) == -1)
 	{
 		perror("shm_unlink: ");
