@@ -2,7 +2,10 @@
 
 static int	init_e(t_proc *e, int number, int fd)
 {
-	srand(time(NULL));
+	struct timeval	time;
+
+	gettimeofday(&time, NULL);
+	srand(time.tv_usec);
 	if ((e->ptr = mmap(0, MAP_SIZE * MAP_SIZE, PROT_READ | PROT_WRITE,
 					MAP_SHARED, fd, 0)) == MAP_FAILED)
 	{
@@ -59,21 +62,21 @@ static int	find_place(char *ptr, int number, int value, sem_t *sem)
 			if (sem_wait(sem) == 1)
 			{
 				perror("sem_wait: ");
-				return (1);
+				return (-1);
 			}
 			ptr[i] = number;
 			if (sem_post(sem) == 1)
 			{
 				perror("sem_post: ");
-				return (1);
+				return (-1);
 			}
-			return (0);
+			return (i);
 		}
 		++i;
 	}
 	if (value != 0)
 		return (find_place(ptr, number, 0, sem));
-	return (1);
+	return (-1);
 }
 
 void		game(int number, int fd)
@@ -82,7 +85,9 @@ void		game(int number, int fd)
 
 	if (init_e(&e, number, fd))
 		return;
-	if (find_place((char *)e.ptr, number, rand()%(MAP_SIZE * MAP_SIZE), e.sem))
+	e.index = find_place((char *)e.ptr, number,
+			rand() % (MAP_SIZE * MAP_SIZE), e.sem);
+	if (e.index == -1)
 		dprintf(2, "Error: No place found so can t play!\n");
 	else
 		play(&e);

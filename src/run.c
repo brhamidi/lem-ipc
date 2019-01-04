@@ -7,9 +7,12 @@ static void	loop(void *ptr)
 	init();
 	while (1)
 	{
-		c = getch();
-		if (c == 'q')
-			break;
+		while ((c = getch()) != ERR)
+			if (c == 'q')
+			{
+				clean();
+				return;
+			}
 		clear();
 		print((char *)ptr);
 		refresh();

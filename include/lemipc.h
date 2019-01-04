@@ -17,8 +17,9 @@
 # include <semaphore.h>
 # include <sys/ipc.h>
 # include <sys/msg.h>
+# include <sys/time.h>
 
-# define MAP_SIZE	20
+# define MAP_SIZE	10
 # define SHM_NAME	"/lemipc"
 
 typedef struct s_proc	t_proc;
@@ -30,6 +31,7 @@ struct s_proc
 	key_t	key;
 	int	msqid;
 	int	number;
+	int	index;
 };
 
 int	get_number(const char *str);
