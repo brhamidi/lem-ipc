@@ -45,6 +45,8 @@ static void	close_e(t_proc *e)
 {
 	if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
 		perror("mmap: ");
+	if (sem_close(e->sem) == -1)
+		perror("sem_close: ");
 }
 
 static int	find_place(char *ptr, int number, int value, sem_t *sem)

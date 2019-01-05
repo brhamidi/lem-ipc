@@ -19,7 +19,7 @@
 # include <sys/msg.h>
 # include <sys/time.h>
 
-# define MAP_SIZE	10
+# define MAP_SIZE	5
 # define SHM_NAME	"/lemipc"
 
 typedef struct s_proc	t_proc;
@@ -41,5 +41,10 @@ void	init(void);
 void	clean(void);
 void	print(char *str);
 void	play(t_proc *e);
+int	can_play(t_proc *e);
+int	move_top(t_proc *e);
+int	move_right(t_proc *e);
+int	move_down(t_proc *e);
+int	move_left(t_proc *e);
 
 #endif
