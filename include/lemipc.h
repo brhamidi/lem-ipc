@@ -19,10 +19,19 @@
 # include <sys/msg.h>
 # include <sys/time.h>
 
-# define MAP_SIZE	5
+# define MAP_SIZE	30
 # define SHM_NAME	"/lemipc"
 
 typedef struct s_proc	t_proc;
+
+typedef enum	e_dir
+{
+	RIGHT = 0,
+	DOWN,
+	LEFT,
+	TOP,
+	NOOPP
+} 		t_dir;
 
 struct s_proc
 {
@@ -32,6 +41,12 @@ struct s_proc
 	int	msqid;
 	int	number;
 	int	index;
+};
+
+struct	s_msgbuf
+{
+	long	mtype;
+	char	mtext[1];
 };
 
 int	get_number(const char *str);
