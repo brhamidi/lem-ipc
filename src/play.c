@@ -1,5 +1,23 @@
 #include "lemipc.h"
 
+void		delete_player(t_proc *e)
+{
+	char	*str;
+
+	str = (char *)e->ptr;
+	if (sem_wait(e->sem) == 1)
+	{
+		perror("sem_wait: ");
+		return;
+	}
+	str[e->index] = -1;
+	if (sem_post(e->sem) == 1)
+	{
+		perror("sem_post: ");
+		return;
+	}
+}
+
 static int	opponent_pos(int number, const char *str)
 {
 	int	i;
@@ -73,19 +91,27 @@ static int	send_dir(t_proc *e, t_dir dir, struct s_msgbuf *buf)
 	return (0);
 }
 
+int	(*tab[4])(t_proc *) =
+{
+	&move_right,
+	&move_down,
+	&move_left,
+	&move_right
+};
+
 void		play(t_proc *e)
 {
 	struct s_msgbuf	buf;
 	t_dir		dir;
 
 	buf.mtype = e->number;
-	while (move_down(e))
+	while (can_play(e))
 	{
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext),
 					4242, IPC_NOWAIT) != -1)
 		{
 			printf("Partir finish !\n");
-			break;
+			return;
 		}
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext),
 					e->number, IPC_NOWAIT) == -1)
@@ -107,6 +133,9 @@ void		play(t_proc *e)
 		}
 		if (dir == NOOPP)
 			printf("info: No opponent\n");
+		else
+			tab[dir](e);
 		sleep(1);
 	}
+	delete_player(e);
 }
