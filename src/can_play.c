@@ -1,28 +1,35 @@
 #include "lemipc.h"
 
-int	blocked(int index, t_proc *e)
+int	blocked(int raw, int col, t_proc *e)
 {
-	const char *str = (const char *)e->ptr;
+	const char	*str = (const char *)e->ptr;
+	const int	i = raw * MAP_SIZE + col;
 
-	if (str[index] == -1)
+	if (col < 0 || col > MAP_SIZE - 1)
 		return (0);
-	if (str[index] == e->number)
+	if (raw < 0 || raw > MAP_SIZE - 1)
+		return (0);
+	if (str[i] == -1)
+		return (0);
+	if (str[i] == e->number)
 		return (0);
 	return (1);
 }
 
 int	can_play(t_proc *e)
 {
-	int amount;
-	
+	int		amount;
+	const int	raw = (e->index / MAP_SIZE);
+	const int	col = (e->index % MAP_SIZE);
+
 	amount = 0;
-	if (e->index % MAP_SIZE > 0)
-		amount += blocked(e->index - 1, e);
-	if (e->index % MAP_SIZE < MAP_SIZE - 1)
-		amount += blocked(e->index + 1, e);
-	if (e->index / MAP_SIZE)
-		amount += blocked(e->index - MAP_SIZE, e);
-	if (e->index / MAP_SIZE < MAP_SIZE - 1)
-		amount += blocked(e->index + MAP_SIZE, e);
+	amount += blocked(raw, col + 1, e);
+	amount += blocked(raw, col - 1, e);
+	amount += blocked(raw + 1, col, e);
+	amount += blocked(raw - 1, col, e);
+	amount += blocked(raw - 1, col - 1, e);
+	amount += blocked(raw - 1, col + 1, e);
+	amount += blocked(raw + 1, col + 1, e);
+	amount += blocked(raw + 1, col - 1, e);
 	return (amount > 1 ? 0 : 1);
 }
