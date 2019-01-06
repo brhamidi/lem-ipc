@@ -34,6 +34,45 @@ static t_dir	find_opponent(t_proc *e)
 		return (RIGHT);
 }
 
+static int	get_ally(const char *str, int number)
+{
+	int	i;
+	int	result;
+
+	i = 0;
+	result = 0;
+	while (i < MAP_SIZE * MAP_SIZE)
+	{
+		if (str[i] == number)
+			++result;
+		++i;
+	}
+	return (result - 1);
+}
+
+static int	send_dir(t_proc *e, t_dir dir, struct s_msgbuf *buf)
+{
+	int	n_ally;
+	
+	if ((n_ally  = get_ally((const char *)e->ptr, e->number)) == 0)
+	{
+		printf("I m alone ..\n");
+		return (0);
+	}
+	while (n_ally)
+	{
+		buf->mtype = e->number;
+		buf->mtext[0] = dir;
+		if (msgsnd(e->msqid, (void *) buf, sizeof(buf->mtext), IPC_NOWAIT) == -1)
+		{
+			perror("msgsnd: ");
+			return (1);
+		}
+		--n_ally;
+	}
+	return (0);
+}
+
 void		play(t_proc *e)
 {
 	struct s_msgbuf	buf;
@@ -43,6 +82,12 @@ void		play(t_proc *e)
 	while (move_down(e))
 	{
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext),
+					4242, IPC_NOWAIT) != -1)
+		{
+			printf("Partir finish !\n");
+			break;
+		}
+		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext),
 					e->number, IPC_NOWAIT) == -1)
 		{
 			if (errno != ENOMSG)
@@ -51,21 +96,14 @@ void		play(t_proc *e)
 				return;
 			}
 			dir = find_opponent(e);
-			buf.mtype = e->number;
-			buf.mtext[0] = dir;
-			if (msgsnd(e->msqid,
-			    (void *) &buf, sizeof(buf.mtext), IPC_NOWAIT) == -1)
-			{
-				perror("msgsnd: ");
-				return;
-			}
-			else
-				printf("Dir sended: %d\n", dir);
+			if (send_dir(e, dir, &buf))
+				break;
+			printf("Dir sended: %d\n", dir);
 		}
 		else
 		{
 			dir = (int)buf.mtext[0];
-			printf("Dir recvied: %d\n", dir);
+			printf("Dir recvied: %d\n\n", dir);
 		}
 		if (dir == NOOPP)
 			printf("info: No opponent\n");

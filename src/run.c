@@ -1,8 +1,38 @@
 #include "lemipc.h"
 
-static void	loop(void *ptr)
+static int	get_nplayer(const char *str)
 {
-	int	c;
+	int	i;
+	int	result;
+
+	i = 0;
+	result = 0;
+	while (i < MAP_SIZE * MAP_SIZE)
+	{
+		if (str[i] != -1)
+			++result;
+		++i;
+	}
+	return (result);
+}
+
+static void	send_finish(int msqid, const char *str)
+{
+	int		n;
+	struct s_msgbuf	buf;
+	
+	n = get_nplayer(str);
+	buf.mtype = 4242;
+	while (n)
+	{
+		msgsnd(msqid, (void *) &buf, sizeof(buf.mtext), IPC_NOWAIT);
+		--n;
+	}
+}
+
+static void	loop(void *ptr, int msqid)
+{
+	int		c;
 
 	init();
 	while (1)
@@ -10,6 +40,8 @@ static void	loop(void *ptr)
 		while ((c = getch()) != ERR)
 			if (c == 'q')
 			{
+				send_finish(msqid, ptr);
+				sleep(2);
 				clean();
 				return;
 			}
@@ -43,7 +75,7 @@ void	run(int fd)
 			perror("msgget: ");
 		else
 		{
-			loop(ptr);
+			loop(ptr, msqid);
 			if (msgctl(msqid, IPC_RMID, NULL) == -1)
 				perror("msgctl: ");
 		}
