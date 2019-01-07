@@ -23,8 +23,8 @@ static int	init_e(t_proc *e, int number, int fd)
 	if ((e->key = ftok("msgq.txt", 42)) == -1)
 	{
 		perror("ftok: ");
-		if (sem_destroy(e->sem))
-			perror("sem_destroy: ");
+		if (sem_unlink(SHM_NAME))
+			perror("sem_unlink: ");
 		if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
 			perror("mmap: ");
 		return (1);
@@ -32,8 +32,8 @@ static int	init_e(t_proc *e, int number, int fd)
 	if ((e->msqid = msgget(e->key, 0644)) == -1)
 	{
 		perror("msgget: ");
-		if (sem_destroy(e->sem))
-			perror("sem_destroy: ");
+		if (sem_unlink(SHM_NAME))
+			perror("sem_unlink: ");
 		if (munmap(e->ptr, MAP_SIZE * MAP_SIZE))
 			perror("mmap: ");
 		return (1);
