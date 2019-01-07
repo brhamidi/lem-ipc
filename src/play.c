@@ -1,5 +1,13 @@
 #include "lemipc.h"
 
+int	(*tab[4])(t_proc *) =
+{
+	&move_right,
+	&move_down,
+	&move_left,
+	&move_right
+};
+
 void		delete_player(t_proc *e)
 {
 	char	*str;
@@ -32,24 +40,22 @@ static int	opponent_pos(int number, const char *str)
 	return (-1);
 }
 
-static t_dir	find_opponent(t_proc *e)
+static void	find_opponent(t_proc *e, int *opp)
 {
 	const int	index_opp = opponent_pos(e->number, (const char *)e->ptr);
 	const int	raw = (index_opp / MAP_SIZE);
 	const int	col = (index_opp % MAP_SIZE);
-	const int	my_raw = (e->index / MAP_SIZE);
-	const int	my_col = (e->index % MAP_SIZE);
 
 	if (index_opp == -1)
-		return (NOOPP);
-	if (raw < my_raw)
-		return (TOP);
-	else if (raw > my_raw)
-		return (DOWN);
-	else if (col < my_col)
-		return (LEFT);
+	{
+		opp[0] = -1;
+		opp[1] = -1;
+	}
 	else
-		return (RIGHT);
+	{
+		opp[0] = raw;
+		opp[1] = col;
+	}
 }
 
 static int	get_ally(const char *str, int number)
@@ -68,7 +74,7 @@ static int	get_ally(const char *str, int number)
 	return (result - 1);
 }
 
-static int	send_dir(t_proc *e, t_dir dir, struct s_msgbuf *buf)
+static int	send_position(t_proc *e, int *opp, struct s_msgbuf *buf)
 {
 	int	n_ally;
 	
@@ -80,7 +86,8 @@ static int	send_dir(t_proc *e, t_dir dir, struct s_msgbuf *buf)
 	while (n_ally)
 	{
 		buf->mtype = e->number;
-		buf->mtext[0] = dir;
+		buf->mtext[0] = opp[0];
+		buf->mtext[4] = opp[1];
 		if (msgsnd(e->msqid, (void *) buf, sizeof(buf->mtext), IPC_NOWAIT) == -1)
 		{
 			perror("msgsnd: ");
@@ -88,27 +95,55 @@ static int	send_dir(t_proc *e, t_dir dir, struct s_msgbuf *buf)
 		}
 		--n_ally;
 	}
+	printf("Position sended r:%d c:%d\n", opp[0], opp[1]);
 	return (0);
 }
 
-int	(*tab[4])(t_proc *) =
+t_dir		get_dir(t_proc *e, int *tab, int rotate)
 {
-	&move_right,
-	&move_down,
-	&move_left,
-	&move_right
-};
+	const int	raw = tab[0];
+	const int	col = tab[1];
+	const int	my_raw = (e->index / MAP_SIZE);
+	const int	my_col = (e->index % MAP_SIZE);
+
+	if (raw == -1)
+		return (NOOPP);
+	if (rotate)
+	{
+		if (raw < my_raw)
+			return (TOP);
+		else if (raw > my_raw)
+			return (DOWN);
+		else if (col < my_col)
+			return (LEFT);
+		else
+			return (RIGHT);
+	}
+	if (col < my_col)
+		return (LEFT);
+	else if (col > my_col)
+		return (RIGHT);
+	else if (raw < my_raw)
+		return (TOP);
+	else
+		return (DOWN);
+}
 
 void		play(t_proc *e)
 {
 	struct s_msgbuf	buf;
 	t_dir		dir;
+	int		opp[2];
+	int		rotate;
 
 	buf.mtype = e->number;
+	opp[0] = -1;
+	opp[1] = -1;
+	dir = NOOPP;
+	rotate = 1;
 	while (can_play(e))
 	{
-		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext),
-					4242, IPC_NOWAIT) != -1)
+		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext), 4242, IPC_NOWAIT) != -1)
 		{
 			printf("Partir finish !\n");
 			return;
@@ -121,21 +156,27 @@ void		play(t_proc *e)
 				perror("msgrcv: ");
 				return;
 			}
-			dir = find_opponent(e);
-			if (send_dir(e, dir, &buf))
+			find_opponent(e, opp);
+			if (send_position(e, opp, &buf))
 				break;
-			printf("Dir sended: %d\n", dir);
+			dir = get_dir(e, opp, rotate);
 		}
 		else
 		{
-			dir = (int)buf.mtext[0];
-			printf("Dir recvied: %d\n\n", dir);
+			opp[0] = (int)buf.mtext[0];
+			opp[1] = (int)buf.mtext[4];
+			printf("Position recvied: %d and %d\n\n", opp[0], opp[1]);
+			dir = get_dir(e, opp, rotate);
 		}
 		if (dir == NOOPP)
 			printf("info: No opponent\n");
 		else
+		{
+			printf("opponent at: %d %d\n", opp[0], opp[1]);
 			tab[dir](e);
+		}
 		sleep(1);
+		rotate = (rotate) ? 0 : 1;
 	}
 	delete_player(e);
 }

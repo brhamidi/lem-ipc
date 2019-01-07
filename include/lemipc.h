@@ -19,7 +19,7 @@
 # include <sys/msg.h>
 # include <sys/time.h>
 
-# define MAP_SIZE	20
+# define MAP_SIZE	40
 # define SHM_NAME	"/lemipc"
 
 typedef struct s_proc	t_proc;
@@ -46,7 +46,7 @@ struct s_proc
 struct	s_msgbuf
 {
 	long	mtype;
-	char	mtext[1];
+	char	mtext[8];
 };
 
 int	get_number(const char *str);
