@@ -5,7 +5,15 @@ int	(*tab[4])(t_proc *) =
 	&move_right,
 	&move_down,
 	&move_left,
-	&move_right
+	&move_top
+};
+
+const char	*str_dir[4] =
+{
+	"RIGHT",
+	"DOWN",
+	"LEFT",
+	"TOP"
 };
 
 void		delete_player(t_proc *e)
@@ -79,10 +87,7 @@ static int	send_position(t_proc *e, int *opp, struct s_msgbuf *buf)
 	int	n_ally;
 	
 	if ((n_ally  = get_ally((const char *)e->ptr, e->number)) == 0)
-	{
-		printf("I m alone ..\n");
 		return (0);
-	}
 	while (n_ally)
 	{
 		buf->mtype = e->number;
@@ -169,10 +174,10 @@ void		play(t_proc *e)
 			dir = get_dir(e, opp, rotate);
 		}
 		if (dir == NOOPP)
-			printf("info: No opponent\n");
+			printf("Info: No opponent\n");
 		else
 		{
-			printf("opponent at: %d %d\n", opp[0], opp[1]);
+			printf("Info: Opponent at: %d %d\n", opp[0], opp[1]);
 			tab[dir](e);
 		}
 		sleep(1);
