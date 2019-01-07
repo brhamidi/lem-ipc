@@ -180,7 +180,7 @@ void		play(t_proc *e)
 			printf("Info: Opponent at: %d %d\n", opp[0], opp[1]);
 			tab[dir](e);
 		}
-		sleep(1);
+		usleep(TIME);
 		rotate = (rotate) ? 0 : 1;
 	}
 	delete_player(e);

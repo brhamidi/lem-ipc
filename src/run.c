@@ -41,14 +41,14 @@ static void	loop(void *ptr, int msqid)
 			if (c == 'q')
 			{
 				send_finish(msqid, ptr);
-				sleep(2);
+				usleep(TIME * 2);
 				clean();
 				return;
 			}
 		clear();
 		print((char *)ptr);
 		refresh();
-		sleep(1);
+		usleep(TIME);
 	}
 	clean();
 }

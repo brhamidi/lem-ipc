@@ -21,6 +21,7 @@
 
 # define MAP_SIZE	40
 # define SHM_NAME	"/lemipc"
+# define TIME		500000
 
 typedef struct s_proc	t_proc;
 

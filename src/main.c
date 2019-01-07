@@ -20,7 +20,7 @@ int	main(int ac, char **av)
 		if (errno == EEXIST)
 		{
 			printf("shm already open so just play\n");
-			sleep(1);
+			usleep(TIME);
 			fd = shm_open(SHM_NAME, O_RDWR, 0644);
 			if (fd == -1)
 				perror("shm_open: ");
