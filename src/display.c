@@ -7,6 +7,14 @@ void	init(void)
 	curs_set(FALSE);
 	cbreak();
 	timeout(0);
+	start_color();
+	init_pair(1, COLOR_BLUE, COLOR_BLACK);
+	init_pair(2, COLOR_GREEN, COLOR_BLACK);
+	init_pair(3, COLOR_RED, COLOR_BLACK);
+	init_pair(4, COLOR_CYAN, COLOR_BLACK);
+	init_pair(5, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(6, COLOR_WHITE, COLOR_BLACK);
+	init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
 }
 
 void	print(char *str)
@@ -22,9 +30,13 @@ void	print(char *str)
 		raw = i / MAP_SIZE;
 		col = i % MAP_SIZE;
 		if (str[i] == -1)
-			mvprintw(2 + raw, col * 2, ".");
+			mvprintw(2 + raw, col * 2, " ");
 		else
+		{
+			attron(COLOR_PAIR(str[i] % 7 + 1));
 			mvprintw(2 + raw, col * 2, "%d", str[i]);
+			attroff(COLOR_PAIR(str[i] % 7 + 1));
+		}
 		++i;
 	}
 }
