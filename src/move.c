@@ -9,7 +9,7 @@ static int	update(t_proc *e, int raw, int col, int old_i)
 	if (str[i] != -1)
 	{
 		printf("Place don't available at index %d and raw %d col %d\n", i, raw, col);
-		return (0);
+		return ((str[i] == e->number) ? -1 : 0);
 	}
 	if (sem_wait(e->sem) == 1)
 	{
@@ -39,6 +39,7 @@ int		move_left(t_proc *e)
 	}
 	return (update(e, raw, col - 1, e->index));
 }
+
 int		move_right(t_proc *e)
 {
 	const int	raw = (e->index / MAP_SIZE);
@@ -51,6 +52,7 @@ int		move_right(t_proc *e)
 	}
 	return (update(e, raw, col + 1, e->index));
 }
+
 int		move_down(t_proc *e)
 {
 	const int	raw = (e->index / MAP_SIZE);
@@ -63,6 +65,7 @@ int		move_down(t_proc *e)
 	}
 	return (update(e, raw + 1, col, e->index));
 }
+
 int		move_top(t_proc *e)
 {
 	const int	raw = (e->index / MAP_SIZE);

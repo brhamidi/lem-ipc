@@ -134,6 +134,34 @@ t_dir		get_dir(t_proc *e, int *tab, int rotate)
 		return (DOWN);
 }
 
+static void	move_player(t_dir dir, t_proc *e)
+{
+
+	if (tab[dir](e) == -1)
+	{
+		if (dir == TOP)
+		{
+			if (tab[RIGHT](e) == -1)
+				tab[LEFT](e);
+		}
+		else if (dir == DOWN)
+		{
+			if (tab[LEFT](e) == -1)
+				tab[RIGHT](e);
+		}
+		else if (dir == RIGHT)
+		{
+			if (tab[TOP](e) == -1)
+				tab[DOWN](e);
+		}
+		else
+		{
+			if (tab[DOWN](e) == -1)
+				tab[TOP](e);
+		}
+	}
+}
+
 void		play(t_proc *e)
 {
 	struct s_msgbuf	buf;
@@ -178,7 +206,7 @@ void		play(t_proc *e)
 		else
 		{
 			printf("Info: Opponent at: %d %d\n", opp[0], opp[1]);
-			tab[dir](e);
+			move_player(dir, e);
 		}
 		usleep(TIME);
 		rotate = (rotate) ? 0 : 1;

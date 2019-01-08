@@ -1,9 +1,6 @@
 
 
-# map is shared memory
-# process communique with message queue
-# process update map with semaphore to avoid concurrent problem
-
 info:
-use EIDRM errno value for player process to know if the first process id dead,
-in msgsnd () return function
+
+- changer de direction quand je cherche une proie
+- garder la meme proie au tour d apres
