@@ -190,8 +190,7 @@ void		play(t_proc *e)
 				return;
 			}
 			find_opponent(e, opp);
-			if (send_position(e, opp, &buf))
-				break;
+			send_position(e, opp, &buf);
 			dir = get_dir(e, opp, rotate);
 		}
 		else
