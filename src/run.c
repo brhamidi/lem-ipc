@@ -47,7 +47,6 @@ static void	loop(void *ptr, int msqid)
 				clean();
 				return;
 			}
-		clear();
 		print((char *)ptr);
 		refresh();
 		usleep(TIME);
