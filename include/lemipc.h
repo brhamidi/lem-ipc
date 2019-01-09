@@ -20,7 +20,7 @@
 # include <sys/time.h>
 # include <signal.h>
 
-# define MAP_SIZE	40
+# define MAP_SIZE	30
 # define SHM_NAME	"/lemipc"
 # define TIME		500000
 
