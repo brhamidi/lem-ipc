@@ -1,5 +1,7 @@
 #include "lemipc.h"
 
+t_proc g_clean;
+
 static int	get_nplayer(const char *str)
 {
 	int	i;
@@ -53,7 +55,32 @@ static void	loop(void *ptr, int msqid)
 	clean();
 }
 
-void	run(int fd)
+static void	clean_prog(int sig)
+{
+	int	x;
+
+	(void)sig;
+	clear();
+	getmaxyx(stdscr, x, x);
+	mvprintw(2, x / 2 - 20, "SIGNAL INTERRUPT CATCHED");
+	mvprintw(4, x / 2 - 20, "GAME WILL STOP ..");
+	refresh();
+	send_finish(g_clean.msqid, g_clean.ptr);
+	usleep(TIME * 4);
+	clean();
+	if (msgctl(g_clean.msqid, IPC_RMID, NULL) == -1)
+		perror("msgctl: ");
+	system("rm msgq.txt");
+	if (munmap(g_clean.ptr, MAP_SIZE * MAP_SIZE))
+		perror("mmap: ");
+	if (sem_unlink(SHM_NAME) == -1)
+		perror("sem_unlink: ");
+	if (shm_unlink(SHM_NAME) == -1)
+		perror("shm_unlink: ");
+	exit(EXIT_FAILURE);
+}
+
+void		run(int fd)
 {
 	void	*ptr;
 	key_t	key;
@@ -75,6 +102,10 @@ void	run(int fd)
 			perror("msgget: ");
 		else
 		{
+			g_clean.ptr = ptr;
+			g_clean.key = key;
+			g_clean.msqid = msqid;
+			signal(SIGINT, clean_prog);
 			loop(ptr, msqid);
 			if (msgctl(msqid, IPC_RMID, NULL) == -1)
 				perror("msgctl: ");

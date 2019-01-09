@@ -18,6 +18,7 @@
 # include <sys/ipc.h>
 # include <sys/msg.h>
 # include <sys/time.h>
+# include <signal.h>
 
 # define MAP_SIZE	40
 # define SHM_NAME	"/lemipc"
