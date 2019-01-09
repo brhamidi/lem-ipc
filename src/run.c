@@ -34,7 +34,7 @@ static void	send_finish(int msqid, const char *str)
 
 static void	loop(void *ptr, int msqid)
 {
-	int		c;
+	int	c;
 
 	init();
 	while (1)
