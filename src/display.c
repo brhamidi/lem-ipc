@@ -25,20 +25,20 @@ void	print(char *str)
 
 	i = 0;
 	mvprintw(0, 0, "Use q to exit");
-	mvwhline(stdscr, 1, 1, '_', MAP_SIZE * 2 + 1);
-	mvwhline(stdscr, MAP_SIZE + 2, 0, '_', MAP_SIZE * 2 + 2);
+	mvwhline(stdscr, 1, 1, '_', MAP_SIZE * 3 + 1);
+	mvwhline(stdscr, MAP_SIZE + 2, 0, '_', MAP_SIZE * 3 + 2);
 	mvwvline(stdscr, 2, 0, '|', MAP_SIZE + 1);
-	mvwvline(stdscr, 2, MAP_SIZE * 2 + 2 , '|', MAP_SIZE + 1);
+	mvwvline(stdscr, 2, MAP_SIZE * 3 + 2 , '|', MAP_SIZE + 1);
 	while (i < MAP_SIZE * MAP_SIZE)
 	{
 		raw = i / MAP_SIZE;
 		col = i % MAP_SIZE;
 		if (str[i] == -1)
-			mvprintw(2 + raw, col * 2 + 2, ".");
+			mvprintw(2 + raw, col * 3 + 2, " ");
 		else
 		{
 			attron(COLOR_PAIR(str[i] % 7 + 1));
-			mvprintw(2 + raw, col * 2 + 2, "%d", str[i]);
+			mvprintw(2 + raw, col * 3 + 2, "%d", str[i]);
 			attroff(COLOR_PAIR(str[i] % 7 + 1));
 		}
 		++i;
