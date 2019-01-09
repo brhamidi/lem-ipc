@@ -66,7 +66,7 @@ static void	clean_prog(int sig)
 	mvprintw(4, x / 2 - 20, "GAME WILL STOP ..");
 	refresh();
 	send_finish(g_clean.msqid, g_clean.ptr);
-	usleep(TIME * 4);
+	usleep(TIME * 3);
 	clean();
 	if (msgctl(g_clean.msqid, IPC_RMID, NULL) == -1)
 		perror("msgctl: ");
