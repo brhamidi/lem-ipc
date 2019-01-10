@@ -166,7 +166,7 @@ void		play(t_proc *e)
 	while (can_play(e))
 	{
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext), 4242, IPC_NOWAIT) != -1)
-			return;
+			break;
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext),
 					e->number, IPC_NOWAIT) == -1)
 		{
