@@ -1,19 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   play.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/01/10 20:14:40 by bhamidi           #+#    #+#             */
+/*   Updated: 2019/01/10 20:20:33 by bhamidi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemipc.h"
 
-int	(*tab[4])(t_proc *) =
+int	(*g_tab[4])(t_proc *) =
 {
 	&move_right,
 	&move_down,
 	&move_left,
 	&move_top
-};
-
-const char	*str_dir[4] =
-{
-	"RIGHT",
-	"DOWN",
-	"LEFT",
-	"TOP"
 };
 
 void		delete_player(t_proc *e)
@@ -22,10 +26,10 @@ void		delete_player(t_proc *e)
 
 	str = (char *)e->ptr;
 	if (sem_wait(e->sem) == 1)
-		return;
+		return ;
 	str[e->index] = -1;
 	if (sem_post(e->sem) == 1)
-		return;
+		return ;
 }
 
 static int	opponent_pos(int number, const char *str)
@@ -79,15 +83,15 @@ static int	get_ally(const char *str, int number)
 static int	send_position(t_proc *e, int *opp, struct s_msgbuf *buf)
 {
 	int	n_ally;
-	
-	if ((n_ally  = get_ally((const char *)e->ptr, e->number)) == 0)
+
+	if ((n_ally = get_ally((const char *)e->ptr, e->number)) == 0)
 		return (0);
 	while (n_ally)
 	{
 		buf->mtype = e->number;
 		buf->mtext[0] = opp[0];
 		buf->mtext[4] = opp[1];
-		msgsnd(e->msqid, (void *) buf, 8, IPC_NOWAIT);
+		msgsnd(e->msqid, (void *)buf, 8, IPC_NOWAIT);
 		--n_ally;
 	}
 	return (0);
@@ -125,28 +129,27 @@ t_dir		get_dir(t_proc *e, int *tab, int rotate)
 
 static void	move_player(t_dir dir, t_proc *e)
 {
-
-	if (tab[dir](e) == -1)
+	if (g_tab[dir](e) == -1)
 	{
 		if (dir == TOP)
 		{
-			if (tab[RIGHT](e) == -1)
-				tab[LEFT](e);
+			if (g_tab[RIGHT](e) == -1)
+				g_tab[LEFT](e);
 		}
 		else if (dir == DOWN)
 		{
-			if (tab[LEFT](e) == -1)
-				tab[RIGHT](e);
+			if (g_tab[LEFT](e) == -1)
+				g_tab[RIGHT](e);
 		}
 		else if (dir == RIGHT)
 		{
-			if (tab[TOP](e) == -1)
-				tab[DOWN](e);
+			if (g_tab[TOP](e) == -1)
+				g_tab[DOWN](e);
 		}
 		else
 		{
-			if (tab[DOWN](e) == -1)
-				tab[TOP](e);
+			if (g_tab[DOWN](e) == -1)
+				g_tab[TOP](e);
 		}
 	}
 }
@@ -154,9 +157,9 @@ static void	move_player(t_dir dir, t_proc *e)
 void		play(t_proc *e, int mode)
 {
 	struct s_msgbuf	buf;
-	t_dir		dir;
-	int		opp[2];
-	int		rotate;
+	t_dir			dir;
+	int				opp[2];
+	int				rotate;
 
 	buf.mtype = e->number;
 	opp[0] = -1;
@@ -165,12 +168,12 @@ void		play(t_proc *e, int mode)
 	while (can_play(e, mode))
 	{
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext), 4242, IPC_NOWAIT) != -1)
-			break;
+			break ;
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext),
 					e->number, IPC_NOWAIT) == -1)
 		{
 			if (errno != ENOMSG)
-				break;
+				break ;
 			find_opponent(e, opp);
 			send_position(e, opp, &buf);
 			dir = get_dir(e, opp, rotate);

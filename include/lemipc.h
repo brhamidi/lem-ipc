@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lemipc.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/01/10 20:22:22 by bhamidi           #+#    #+#             */
+/*   Updated: 2019/01/10 20:30:34 by bhamidi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LEMIPC_H
 # define LEMIPC_H
 
@@ -23,7 +35,6 @@
 # define MAP_SIZE	30
 # define SHM_NAME	"/lemipc"
 # define TIME		500000
-
 # define CLASSIC	0
 # define ZOMBIE		1
 # define MODE		CLASSIC
@@ -37,16 +48,16 @@ typedef enum	e_dir
 	LEFT,
 	TOP,
 	NOOPP
-} 		t_dir;
+}				t_dir;
 
-struct s_proc
+struct	s_proc
 {
 	void	*ptr;
 	sem_t	*sem;
 	key_t	key;
-	int	msqid;
-	int	number;
-	int	index;
+	int		msqid;
+	int		number;
+	int		index;
 };
 
 struct	s_msgbuf
@@ -55,17 +66,17 @@ struct	s_msgbuf
 	char	mtext[200];
 };
 
-int	get_number(const char *str);
+int		get_number(const char *str);
 void	run(int fd);
 void	game(int number, int fd);
 void	init(void);
 void	clean(void);
 void	print(char *str);
 void	play(t_proc *e, int mode);
-int	can_play(t_proc *e, int mode);
-int	move_top(t_proc *e);
-int	move_right(t_proc *e);
-int	move_down(t_proc *e);
-int	move_left(t_proc *e);
+int		can_play(t_proc *e, int mode);
+int		move_top(t_proc *e);
+int		move_right(t_proc *e);
+int		move_down(t_proc *e);
+int		move_left(t_proc *e);
 
 #endif

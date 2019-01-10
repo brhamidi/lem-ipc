@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   can_play.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/01/10 20:02:02 by bhamidi           #+#    #+#             */
+/*   Updated: 2019/01/10 20:03:02 by bhamidi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemipc.h"
 
-int	blocked(int raw, int col, t_proc *e)
+static int	blocked(int raw, int col, t_proc *e)
 {
 	const char	*str = (const char *)e->ptr;
 	const int	i = raw * MAP_SIZE + col;
@@ -16,7 +28,7 @@ int	blocked(int raw, int col, t_proc *e)
 	return (str[i]);
 }
 
-int	doublon(const int *tab, int value, int index, int sum)
+static int	doublon(const int *tab, int value, int index, int sum)
 {
 	if (sum >= 2)
 		return (1);
@@ -27,7 +39,7 @@ int	doublon(const int *tab, int value, int index, int sum)
 	return (doublon(tab, value, index + 1, sum));
 }
 
-int	verif(const int *tab, int index)
+static int	verif(const int *tab, int index)
 {
 	if (index == 8)
 		return (0);
@@ -37,20 +49,19 @@ int	verif(const int *tab, int index)
 	return (verif(tab, index + 1));
 }
 
-void	update_player(t_proc *e)
+static void	update_player(t_proc *e)
 {
 	char	*str;
 
 	str = (char *)e->ptr;
 	if (sem_wait(e->sem) == 1)
-		return;
+		return ;
 	str[e->index] = e->number;
 	if (sem_post(e->sem) == 1)
-		return;
+		return ;
 }
 
-
-int	can_play(t_proc *e, int mode)
+int			can_play(t_proc *e, int mode)
 {
 	int			tab[8];
 	const int	raw = (e->index / MAP_SIZE);

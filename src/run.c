@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   run.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/01/10 20:24:36 by bhamidi           #+#    #+#             */
+/*   Updated: 2019/01/10 20:26:26 by bhamidi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemipc.h"
 
 t_proc g_clean;
@@ -20,16 +32,16 @@ static int	get_nplayer(const char *str)
 
 static void	send_finish(int msqid, const char *str)
 {
-	int		n;
+	int				n;
 	struct s_msgbuf	buf;
-	int		timeout;
-	
+	int				timeout;
+
 	n = get_nplayer(str);
 	buf.mtype = 4242;
 	timeout = 1000;
 	while (n && timeout)
 	{
-		if (msgsnd(msqid, (void *) &buf, sizeof(buf.mtext), IPC_NOWAIT) != -1)
+		if (msgsnd(msqid, (void *)&buf, sizeof(buf.mtext), IPC_NOWAIT) != -1)
 			--n;
 		usleep(1000);
 		--timeout;
@@ -76,7 +88,7 @@ static int	print_winner(const char *str, void *ptr, int *msqid, int key)
 		if (str[i] != -1)
 		{
 			number = str[i];
-			break;
+			break ;
 		}
 	send_finish(*msqid, ptr);
 	msgctl(*msqid, IPC_RMID, NULL);
@@ -95,7 +107,7 @@ static int	print_winner(const char *str, void *ptr, int *msqid, int key)
 		if (c == 'y' || c == 'n')
 		{
 			clear();
-			return c == 'y' ? 1 : 0;
+			return (c == 'y' ? 1 : 0);
 		}
 		usleep(TIME);
 	}
@@ -117,7 +129,7 @@ static void	loop(void *ptr, int *msqid, int key)
 				send_finish(*msqid, ptr);
 				usleep(TIME * 2);
 				clean();
-				return;
+				return ;
 			}
 		print((char *)ptr);
 		refresh();
@@ -129,9 +141,9 @@ static void	loop(void *ptr, int *msqid, int key)
 			{
 				clean();
 				loop(ptr, msqid, key);
-				return;
+				return ;
 			}
-			break;
+			break ;
 		}
 		usleep(TIME);
 	}
@@ -163,11 +175,11 @@ void		run(int fd)
 {
 	void	*ptr;
 	key_t	key;
-	int	msqid;
+	int		msqid;
 
 	if ((ptr = mmap(0, MAP_SIZE * MAP_SIZE, PROT_READ | PROT_WRITE,
 					MAP_SHARED, fd, 0)) == MAP_FAILED)
-		return;
+		return ;
 	memset(ptr, -1, MAP_SIZE * MAP_SIZE);
 	system("touch msgq.txt");
 	if ((key = ftok("msgq.txt", 42)) != -1)

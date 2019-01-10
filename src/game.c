@@ -1,11 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   game.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/01/10 20:03:26 by bhamidi           #+#    #+#             */
+/*   Updated: 2019/01/10 20:06:36 by bhamidi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemipc.h"
 
 static int	init_e(t_proc *e, int number, int fd)
 {
-	struct timeval	time;
-
-	gettimeofday(&time, NULL);
-	srand(time.tv_usec);
 	if ((e->ptr = mmap(0, MAP_SIZE * MAP_SIZE, PROT_READ | PROT_WRITE,
 					MAP_SHARED, fd, 0)) == MAP_FAILED)
 		return (1);
@@ -61,10 +69,13 @@ static int	find_place(char *ptr, int number, int value, sem_t *sem)
 
 void		game(int number, int fd)
 {
-	t_proc	e;
+	struct timeval	time;
+	t_proc			e;
 
+	gettimeofday(&time, NULL);
+	srand(time.tv_usec);
 	if (init_e(&e, number, fd))
-		return;
+		return ;
 	e.index = find_place((char *)e.ptr, number,
 			rand() % (MAP_SIZE * MAP_SIZE), e.sem);
 	if (e.index != -1)

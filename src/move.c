@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   move.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/01/10 20:14:02 by bhamidi           #+#    #+#             */
+/*   Updated: 2019/01/10 20:14:27 by bhamidi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemipc.h"
 
 static int	update(t_proc *e, int raw, int col, int old_i)
@@ -18,7 +30,7 @@ static int	update(t_proc *e, int raw, int col, int old_i)
 	return (1);
 }
 
-int		move_left(t_proc *e)
+int			move_left(t_proc *e)
 {
 	const int	raw = (e->index / MAP_SIZE);
 	const int	col = (e->index % MAP_SIZE);
@@ -28,7 +40,7 @@ int		move_left(t_proc *e)
 	return (update(e, raw, col - 1, e->index));
 }
 
-int		move_right(t_proc *e)
+int			move_right(t_proc *e)
 {
 	const int	raw = (e->index / MAP_SIZE);
 	const int	col = (e->index % MAP_SIZE);
@@ -38,7 +50,7 @@ int		move_right(t_proc *e)
 	return (update(e, raw, col + 1, e->index));
 }
 
-int		move_down(t_proc *e)
+int			move_down(t_proc *e)
 {
 	const int	raw = (e->index / MAP_SIZE);
 	const int	col = (e->index % MAP_SIZE);
@@ -48,7 +60,7 @@ int		move_down(t_proc *e)
 	return (update(e, raw + 1, col, e->index));
 }
 
-int		move_top(t_proc *e)
+int			move_top(t_proc *e)
 {
 	const int	raw = (e->index / MAP_SIZE);
 	const int	col = (e->index % MAP_SIZE);
