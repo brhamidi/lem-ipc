@@ -124,8 +124,6 @@ static void	loop(void *ptr, int msqid)
 				loop(ptr, msqid);
 				return;
 			}
-			send_finish(msqid, ptr);
-			usleep(TIME * 2);
 			break;
 		}
 		usleep(TIME);
