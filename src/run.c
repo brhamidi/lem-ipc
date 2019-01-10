@@ -22,13 +22,17 @@ static void	send_finish(int msqid, const char *str)
 {
 	int		n;
 	struct s_msgbuf	buf;
+	int		timeout;
 	
 	n = get_nplayer(str);
 	buf.mtype = 4242;
-	while (n)
+	timeout = 1000;
+	while (n && timeout)
 	{
-		msgsnd(msqid, (void *) &buf, sizeof(buf.mtext), IPC_NOWAIT);
-		--n;
+		if (msgsnd(msqid, (void *) &buf, sizeof(buf.mtext), IPC_NOWAIT) != -1)
+			--n;
+		usleep(1000);
+		--timeout;
 	}
 }
 
@@ -58,7 +62,7 @@ static int	nteam(const char *str)
 	return (nteam);
 }
 
-static int	print_winner(const char *str, void *ptr, int msqid)
+static int	print_winner(const char *str, void *ptr, int *msqid, int key)
 {
 	int	i;
 	int	number;
@@ -74,7 +78,10 @@ static int	print_winner(const char *str, void *ptr, int msqid)
 			number = str[i];
 			break;
 		}
-	send_finish(msqid, ptr);
+	send_finish(*msqid, ptr);
+	msgctl(*msqid, IPC_RMID, NULL);
+	usleep(1000);
+	*msqid = msgget(key, 0644 | IPC_CREAT);
 	clear();
 	getmaxyx(stdscr, y, x);
 	mvprintw(y / 2, x / 2 - 4, "GAME END");
@@ -95,7 +102,7 @@ static int	print_winner(const char *str, void *ptr, int msqid)
 	return (0);
 }
 
-static void	loop(void *ptr, int msqid)
+static void	loop(void *ptr, int *msqid, int key)
 {
 	int	c;
 	int	game;
@@ -107,7 +114,7 @@ static void	loop(void *ptr, int msqid)
 		while ((c = getch()) != ERR)
 			if (c == 'q')
 			{
-				send_finish(msqid, ptr);
+				send_finish(*msqid, ptr);
 				usleep(TIME * 2);
 				clean();
 				return;
@@ -118,10 +125,10 @@ static void	loop(void *ptr, int msqid)
 			game = 1;
 		if (nteam((const char *)ptr) == 1 && game)
 		{
-			if (print_winner((const char *)ptr, ptr, msqid))
+			if (print_winner((const char *)ptr, ptr, msqid, key))
 			{
 				clean();
-				loop(ptr, msqid);
+				loop(ptr, msqid, key);
 				return;
 			}
 			break;
@@ -171,7 +178,7 @@ void		run(int fd)
 			g_clean.key = key;
 			g_clean.msqid = msqid;
 			signal(SIGINT, clean_prog);
-			loop(ptr, msqid);
+			loop(ptr, &msqid, key);
 			msgctl(msqid, IPC_RMID, NULL);
 		}
 	}

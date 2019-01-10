@@ -4,7 +4,6 @@ int	main(int ac, char **av)
 {
 	int	number;
 	int	fd;
-	pid_t	pid;
 
 	if (ac != 2)
 	{
@@ -34,18 +33,7 @@ int	main(int ac, char **av)
 		exit(EXIT_FAILURE);
 	}
 	if (sem_open(SHM_NAME, O_CREAT, 0644, 1) != SEM_FAILED)
-	{
-		pid = fork();
-		if (pid == 0)
-		{
-			usleep(TIME);
-			game(number, fd);
-			exit(EXIT_SUCCESS);
-		}
-		else
-			run(fd);
-
-	}
+		run(fd);
 	sem_unlink(SHM_NAME);
 	shm_unlink(SHM_NAME);
 	return (0);

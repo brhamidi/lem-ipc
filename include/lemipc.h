@@ -48,7 +48,7 @@ struct s_proc
 struct	s_msgbuf
 {
 	long	mtype;
-	char	mtext[8];
+	char	mtext[200];
 };
 
 int	get_number(const char *str);

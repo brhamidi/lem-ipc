@@ -87,8 +87,7 @@ static int	send_position(t_proc *e, int *opp, struct s_msgbuf *buf)
 		buf->mtype = e->number;
 		buf->mtext[0] = opp[0];
 		buf->mtext[4] = opp[1];
-		if (msgsnd(e->msqid, (void *) buf, sizeof(buf->mtext), IPC_NOWAIT) == -1)
-			return (1);
+		msgsnd(e->msqid, (void *) buf, 8, IPC_NOWAIT);
 		--n_ally;
 	}
 	return (0);
@@ -171,7 +170,7 @@ void		play(t_proc *e)
 					e->number, IPC_NOWAIT) == -1)
 		{
 			if (errno != ENOMSG)
-				return;
+				break;
 			find_opponent(e, opp);
 			send_position(e, opp, &buf);
 			dir = get_dir(e, opp, rotate);
