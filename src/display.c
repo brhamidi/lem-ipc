@@ -6,7 +6,7 @@
 /*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 19:58:30 by bhamidi           #+#    #+#             */
-/*   Updated: 2019/01/10 20:00:05 by bhamidi          ###   ########.fr       */
+/*   Updated: 2019/01/10 20:34:48 by bhamidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	init(void)
 {
+	char		*mode = MODE == ZOMBIE ? "ZOMBIE" : "CLASSIC";
 	const char	*str = "\
 			 _                      _            \n\
 			| | ___ _ __ ___       (_)_ __   ___ \n\
@@ -35,7 +36,7 @@ void	init(void)
 	init_pair(5, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(6, COLOR_WHITE, COLOR_BLACK);
 	init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
-	mvprintw(6, 0, "Use q to exit");
+	mvprintw(6, 0, "Use q to exit. Game mode: < %s >", mode);
 	mvprintw(0, 0, str);
 	mvwhline(stdscr, 1 + 6, 1, '_', MAP_SIZE * 3 + 1);
 	mvwhline(stdscr, MAP_SIZE + 2 + 6, 0, '_', MAP_SIZE * 3 + 2);
