@@ -68,6 +68,6 @@ void		game(int number, int fd)
 	e.index = find_place((char *)e.ptr, number,
 			rand() % (MAP_SIZE * MAP_SIZE), e.sem);
 	if (e.index != -1)
-		play(&e);
+		play(&e, ZOMBIE);
 	close_e(&e);
 }

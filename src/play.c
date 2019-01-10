@@ -151,7 +151,7 @@ static void	move_player(t_dir dir, t_proc *e)
 	}
 }
 
-void		play(t_proc *e)
+void		play(t_proc *e, int mode)
 {
 	struct s_msgbuf	buf;
 	t_dir		dir;
@@ -162,7 +162,7 @@ void		play(t_proc *e)
 	opp[0] = -1;
 	opp[1] = -1;
 	rotate = 1;
-	while (can_play(e))
+	while (can_play(e, mode))
 	{
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext), 4242, IPC_NOWAIT) != -1)
 			break;
@@ -186,5 +186,6 @@ void		play(t_proc *e)
 		usleep(TIME);
 		rotate = (rotate) ? 0 : 1;
 	}
+	usleep(TIME);
 	delete_player(e);
 }

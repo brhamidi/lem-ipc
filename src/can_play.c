@@ -13,23 +13,64 @@ int	blocked(int raw, int col, t_proc *e)
 		return (0);
 	if (str[i] == e->number)
 		return (0);
-	return (1);
+	return (str[i]);
 }
 
-int	can_play(t_proc *e)
+int	doublon(const int *tab, int value, int index, int sum)
 {
-	int		amount;
+	if (sum >= 2)
+		return (1);
+	if (index == 8)
+		return (0);
+	if (tab[index] == value)
+		return (doublon(tab, value, index + 1, sum + 1));
+	return (doublon(tab, value, index + 1, sum));
+}
+
+int	verif(const int *tab, int index)
+{
+	if (index == 8)
+		return (0);
+	if (tab[index] != 0)
+		if (doublon(tab, tab[index], 0, 0))
+			return (tab[index]);
+	return (verif(tab, index + 1));
+}
+
+void	update_player(t_proc *e)
+{
+	char	*str;
+
+	str = (char *)e->ptr;
+	if (sem_wait(e->sem) == 1)
+		return;
+	str[e->index] = e->number;
+	if (sem_post(e->sem) == 1)
+		return;
+}
+
+
+int	can_play(t_proc *e, int mode)
+{
+	int			tab[8];
 	const int	raw = (e->index / MAP_SIZE);
 	const int	col = (e->index % MAP_SIZE);
+	int			value;
 
-	amount = 0;
-	amount += blocked(raw, col + 1, e);
-	amount += blocked(raw, col - 1, e);
-	amount += blocked(raw + 1, col, e);
-	amount += blocked(raw - 1, col, e);
-	amount += blocked(raw - 1, col - 1, e);
-	amount += blocked(raw - 1, col + 1, e);
-	amount += blocked(raw + 1, col + 1, e);
-	amount += blocked(raw + 1, col - 1, e);
-	return (amount > 1 ? 0 : 1);
+	tab[0] = blocked(raw, col + 1, e);
+	tab[1] = blocked(raw, col - 1, e);
+	tab[2] = blocked(raw + 1, col, e);
+	tab[3] = blocked(raw - 1, col, e);
+	tab[4] = blocked(raw - 1, col - 1, e);
+	tab[5] = blocked(raw - 1, col + 1, e);
+	tab[6] = blocked(raw + 1, col + 1, e);
+	tab[7] = blocked(raw + 1, col - 1, e);
+	value = verif(tab, 0);
+	if (mode == 1 && value > 0)
+	{
+		e->number = value;
+		update_player(e);
+		return (1);
+	}
+	return (value > 0 ? 0 : 1);
 }

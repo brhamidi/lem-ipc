@@ -24,6 +24,9 @@
 # define SHM_NAME	"/lemipc"
 # define TIME		500000
 
+# define CLASSIC	0
+# define ZOMBIE		1
+
 typedef struct s_proc	t_proc;
 
 typedef enum	e_dir
@@ -57,8 +60,8 @@ void	game(int number, int fd);
 void	init(void);
 void	clean(void);
 void	print(char *str);
-void	play(t_proc *e);
-int	can_play(t_proc *e);
+void	play(t_proc *e, int mode);
+int	can_play(t_proc *e, int mode);
 int	move_top(t_proc *e);
 int	move_right(t_proc *e);
 int	move_down(t_proc *e);
