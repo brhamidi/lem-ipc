@@ -22,16 +22,10 @@ void		delete_player(t_proc *e)
 
 	str = (char *)e->ptr;
 	if (sem_wait(e->sem) == 1)
-	{
-		perror("sem_wait: ");
 		return;
-	}
 	str[e->index] = -1;
 	if (sem_post(e->sem) == 1)
-	{
-		perror("sem_post: ");
 		return;
-	}
 }
 
 static int	opponent_pos(int number, const char *str)
@@ -94,13 +88,9 @@ static int	send_position(t_proc *e, int *opp, struct s_msgbuf *buf)
 		buf->mtext[0] = opp[0];
 		buf->mtext[4] = opp[1];
 		if (msgsnd(e->msqid, (void *) buf, sizeof(buf->mtext), IPC_NOWAIT) == -1)
-		{
-			perror("msgsnd: ");
 			return (1);
-		}
 		--n_ally;
 	}
-	printf("Position sended r:%d c:%d\n", opp[0], opp[1]);
 	return (0);
 }
 
@@ -172,23 +162,16 @@ void		play(t_proc *e)
 	buf.mtype = e->number;
 	opp[0] = -1;
 	opp[1] = -1;
-	dir = NOOPP;
 	rotate = 1;
 	while (can_play(e))
 	{
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext), 4242, IPC_NOWAIT) != -1)
-		{
-			printf("Partir finish !\n");
 			return;
-		}
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext),
 					e->number, IPC_NOWAIT) == -1)
 		{
 			if (errno != ENOMSG)
-			{
-				perror("msgrcv: ");
 				return;
-			}
 			find_opponent(e, opp);
 			send_position(e, opp, &buf);
 			dir = get_dir(e, opp, rotate);
@@ -197,16 +180,10 @@ void		play(t_proc *e)
 		{
 			opp[0] = (int)buf.mtext[0];
 			opp[1] = (int)buf.mtext[4];
-			printf("Position recvied: %d and %d\n\n", opp[0], opp[1]);
 			dir = get_dir(e, opp, rotate);
 		}
-		if (dir == NOOPP)
-			printf("Info: No opponent\n");
-		else
-		{
-			printf("Info: Opponent at: %d %d\n", opp[0], opp[1]);
+		if (dir != NOOPP)
 			move_player(dir, e);
-		}
 		usleep(TIME);
 		rotate = (rotate) ? 0 : 1;
 	}

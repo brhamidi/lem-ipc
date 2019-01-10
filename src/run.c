@@ -67,15 +67,11 @@ static void	clean_prog(int sig)
 	send_finish(g_clean.msqid, g_clean.ptr);
 	usleep(TIME * 3);
 	clean();
-	if (msgctl(g_clean.msqid, IPC_RMID, NULL) == -1)
-		perror("msgctl: ");
+	msgctl(g_clean.msqid, IPC_RMID, NULL);
 	system("rm msgq.txt");
-	if (munmap(g_clean.ptr, MAP_SIZE * MAP_SIZE))
-		perror("mmap: ");
-	if (sem_unlink(SHM_NAME) == -1)
-		perror("sem_unlink: ");
-	if (shm_unlink(SHM_NAME) == -1)
-		perror("shm_unlink: ");
+	munmap(g_clean.ptr, MAP_SIZE * MAP_SIZE);
+	sem_unlink(SHM_NAME);
+	shm_unlink(SHM_NAME);
 	exit(EXIT_FAILURE);
 }
 
@@ -87,30 +83,21 @@ void		run(int fd)
 
 	if ((ptr = mmap(0, MAP_SIZE * MAP_SIZE, PROT_READ | PROT_WRITE,
 					MAP_SHARED, fd, 0)) == MAP_FAILED)
-	{
-		perror("mmap: ");
 		return;
-	}
 	memset(ptr, -1, MAP_SIZE * MAP_SIZE);
 	system("touch msgq.txt");
-	if ((key = ftok("msgq.txt", 42)) == -1)
-		perror("ftok: ");
-	else
+	if ((key = ftok("msgq.txt", 42)) != -1)
 	{
-		if ((msqid = msgget(key, 0644 | IPC_CREAT)) == -1)
-			perror("msgget: ");
-		else
+		if ((msqid = msgget(key, 0644 | IPC_CREAT)) != -1)
 		{
 			g_clean.ptr = ptr;
 			g_clean.key = key;
 			g_clean.msqid = msqid;
 			signal(SIGINT, clean_prog);
 			loop(ptr, msqid);
-			if (msgctl(msqid, IPC_RMID, NULL) == -1)
-				perror("msgctl: ");
+			msgctl(msqid, IPC_RMID, NULL);
 		}
 	}
 	system("rm msgq.txt");
-	if (munmap(ptr, MAP_SIZE * MAP_SIZE))
-		perror("mmap: ");
+	munmap(ptr, MAP_SIZE * MAP_SIZE);
 }

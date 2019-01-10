@@ -20,30 +20,20 @@ int	main(int ac, char **av)
 	{
 		if (errno == EEXIST)
 		{
-			printf("shm already open so just play\n");
 			usleep(TIME);
-			fd = shm_open(SHM_NAME, O_RDWR, 0644);
-			if (fd == -1)
-				perror("shm_open: ");
-			else
+			if ((fd = shm_open(SHM_NAME, O_RDWR, 0644)) != -1)
 				game(number, fd);
 			return (0);
 		}
 		else
-		{
-			perror("shm_open: ");
 			exit(EXIT_FAILURE);
-		}
 	}
 	if (ftruncate(fd, (MAP_SIZE * MAP_SIZE)) == -1)
 	{
-		perror("ftruncate: ");
 		shm_unlink(SHM_NAME);
 		exit(EXIT_FAILURE);
 	}
-	if (sem_open(SHM_NAME, O_CREAT, 0644, 1) == SEM_FAILED)
-		perror("sem_open: ");
-	else
+	if (sem_open(SHM_NAME, O_CREAT, 0644, 1) != SEM_FAILED)
 	{
 		pid = fork();
 		if (pid == 0)
@@ -56,12 +46,7 @@ int	main(int ac, char **av)
 			run(fd);
 
 	}
-	if (sem_unlink(SHM_NAME) == -1)
-		perror("sem_unlink: ");
-	if (shm_unlink(SHM_NAME) == -1)
-	{
-		perror("shm_unlink: ");
-		exit(EXIT_FAILURE);
-	}
+	sem_unlink(SHM_NAME);
+	shm_unlink(SHM_NAME);
 	return (0);
 }
