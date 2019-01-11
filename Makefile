@@ -1,9 +1,9 @@
 CC	= gcc
 NAME	= lemipc
 CFLAGS	= -Werror -Wextra -Wall -O2
-CFLAGS	+= -lrt
-CFLAGS	+= -pthread
-CFLAGS	+= -lncurses
+#CFLAGS	+= -lrt
+#CFLAGS	+= -pthread
+#CFLAGS	+= -lncurses
 
 SRC_PATH	= src/
 INCLUDE_PATH	= include/
@@ -14,7 +14,9 @@ OBJ		= main.o	\
 		  game.o	\
 		  display.o	\
 		  play.o	\
+		  play_function.o	\
 		  can_play.o	\
+		  utility.o	\
 		  move.o
 
 INCLUDE	= lemipc.h
@@ -25,7 +27,7 @@ INCLUDES=$(addprefix $(INCLUDE_PATH), $(INCLUDE))
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@
+	$(CC) $(CFLAGS) $(OBJS) -o $@ -lncurses
 
 $(SRC_PATH)%.o: $(SRC_PATH)%.c $(INCLUDES) Makefile
 	$(CC) $(CFLAGS) -I $(INCLUDE_PATH) -c $< -o $@

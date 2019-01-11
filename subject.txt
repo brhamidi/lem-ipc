@@ -1,6 +1,0 @@
-
-
-info:
-
-- changer de direction quand je cherche une proie
-- garder la meme proie au tour d apres

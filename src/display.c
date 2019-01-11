@@ -6,23 +6,29 @@
 /*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 19:58:30 by bhamidi           #+#    #+#             */
-/*   Updated: 2019/01/10 20:34:48 by bhamidi          ###   ########.fr       */
+/*   Updated: 2019/01/11 15:52:34 by bhamidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemipc.h"
 
+void	header(char *str)
+{
+	bzero((void *)str, 1024);
+	strcat(str, "			 _                      _            \n");
+	strcat(str, "			| | ___ _ __ ___       (_)_ __   ___ \n");
+	strcat(str, "			| |/ _ \\ '_ ` _ \\ _____| | '_ \\ / __|\n");
+	strcat(str, "			| |  __/ | | | | |_____| | |_) | (__ \n");
+	strcat(str, "			|_|\\___|_| |_| |_|     |_| .__/ \\___|\n");
+	strcat(str, "			                         |_|         ");
+}
+
 void	init(void)
 {
-	char		*mode = MODE == ZOMBIE ? "ZOMBIE" : "CLASSIC";
-	const char	*str = "\
-			 _                      _            \n\
-			| | ___ _ __ ___       (_)_ __   ___ \n\
-			| |/ _ \\ '_ ` _ \\ _____| | '_ \\ / __|\n\
-			| |  __/ | | | | |_____| | |_) | (__ \n\
-			|_|\\___|_| |_| |_|     |_| .__/ \\___|\n\
-			                         |_|         ";
+	const char	*mode = MODE == ZOMBIE ? "ZOMBIE" : "CLASSIC";
+	char		str[1024];
 
+	header(str);
 	initscr();
 	noecho();
 	curs_set(FALSE);
@@ -38,10 +44,10 @@ void	init(void)
 	init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
 	mvprintw(6, 0, "Use q to exit. Game mode: < %s >", mode);
 	mvprintw(0, 0, str);
-	mvwhline(stdscr, 1 + 6, 1, '_', MAP_SIZE * 3 + 1);
 	mvwhline(stdscr, MAP_SIZE + 2 + 6, 0, '_', MAP_SIZE * 3 + 2);
+	mvwhline(stdscr, 1 + 6, 1, '_', MAP_SIZE * 3 + 1);
 	mvwvline(stdscr, 2 + 6, 0, '|', MAP_SIZE + 1);
-	mvwvline(stdscr, 2 + 6, MAP_SIZE * 3 + 2 , '|', MAP_SIZE + 1);
+	mvwvline(stdscr, 2 + 6, MAP_SIZE * 3 + 2, '|', MAP_SIZE + 1);
 }
 
 void	print(char *str)

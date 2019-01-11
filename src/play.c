@@ -6,7 +6,7 @@
 /*   By: bhamidi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:14:40 by bhamidi           #+#    #+#             */
-/*   Updated: 2019/01/10 20:20:33 by bhamidi          ###   ########.fr       */
+/*   Updated: 2019/01/11 16:04:00 by bhamidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,138 +20,35 @@ int	(*g_tab[4])(t_proc *) =
 	&move_top
 };
 
-void		delete_player(t_proc *e)
+static void	init_play(int *opp, int *rotate, struct s_msgbuf *buf, t_proc *e)
 {
-	char	*str;
-
-	str = (char *)e->ptr;
-	if (sem_wait(e->sem) == 1)
-		return ;
-	str[e->index] = -1;
-	if (sem_post(e->sem) == 1)
-		return ;
+	buf->mtype = e->number;
+	opp[0] = -1;
+	opp[1] = -1;
+	*rotate = 1;
 }
 
-static int	opponent_pos(int number, const char *str)
+t_dir		find_and_search_opp(t_proc *e, int *opp, struct s_msgbuf *buf,
+		int rotate)
 {
-	int	i;
-
-	i = 0;
-	while (i < MAP_SIZE * MAP_SIZE)
-	{
-		if (str[i] != -1 && str[i] != number)
-			return (i);
-		++i;
-	}
-	return (-1);
+	find_opponent(e, opp);
+	send_position(e, opp, buf);
+	return (get_dir(e, opp, rotate));
 }
 
-static void	find_opponent(t_proc *e, int *opp)
+int			end_play(t_dir dir, t_proc *e, int rotate)
 {
-	const int	index_opp = opponent_pos(e->number, (const char *)e->ptr);
-	const int	raw = (index_opp / MAP_SIZE);
-	const int	col = (index_opp % MAP_SIZE);
-
-	if (index_opp == -1)
-	{
-		opp[0] = -1;
-		opp[1] = -1;
-	}
-	else
-	{
-		opp[0] = raw;
-		opp[1] = col;
-	}
+	if (dir != NOOPP)
+		move_player(dir, e);
+	usleep(TIME);
+	return (rotate ? 0 : 1);
 }
 
-static int	get_ally(const char *str, int number)
+t_dir		get_dir_opp(int *opp, struct s_msgbuf *buf, t_proc *e, int rotate)
 {
-	int	i;
-	int	result;
-
-	i = 0;
-	result = 0;
-	while (i < MAP_SIZE * MAP_SIZE)
-	{
-		if (str[i] == number)
-			++result;
-		++i;
-	}
-	return (result - 1);
-}
-
-static int	send_position(t_proc *e, int *opp, struct s_msgbuf *buf)
-{
-	int	n_ally;
-
-	if ((n_ally = get_ally((const char *)e->ptr, e->number)) == 0)
-		return (0);
-	while (n_ally)
-	{
-		buf->mtype = e->number;
-		buf->mtext[0] = opp[0];
-		buf->mtext[4] = opp[1];
-		msgsnd(e->msqid, (void *)buf, 8, IPC_NOWAIT);
-		--n_ally;
-	}
-	return (0);
-}
-
-t_dir		get_dir(t_proc *e, int *tab, int rotate)
-{
-	const int	raw = tab[0];
-	const int	col = tab[1];
-	const int	my_raw = (e->index / MAP_SIZE);
-	const int	my_col = (e->index % MAP_SIZE);
-
-	if (raw == -1)
-		return (NOOPP);
-	if (rotate)
-	{
-		if (raw < my_raw)
-			return (TOP);
-		else if (raw > my_raw)
-			return (DOWN);
-		else if (col < my_col)
-			return (LEFT);
-		else
-			return (RIGHT);
-	}
-	if (col < my_col)
-		return (LEFT);
-	else if (col > my_col)
-		return (RIGHT);
-	else if (raw < my_raw)
-		return (TOP);
-	else
-		return (DOWN);
-}
-
-static void	move_player(t_dir dir, t_proc *e)
-{
-	if (g_tab[dir](e) == -1)
-	{
-		if (dir == TOP)
-		{
-			if (g_tab[RIGHT](e) == -1)
-				g_tab[LEFT](e);
-		}
-		else if (dir == DOWN)
-		{
-			if (g_tab[LEFT](e) == -1)
-				g_tab[RIGHT](e);
-		}
-		else if (dir == RIGHT)
-		{
-			if (g_tab[TOP](e) == -1)
-				g_tab[DOWN](e);
-		}
-		else
-		{
-			if (g_tab[DOWN](e) == -1)
-				g_tab[TOP](e);
-		}
-	}
+	opp[0] = (int)buf->mtext[0];
+	opp[1] = (int)buf->mtext[4];
+	return (get_dir(e, opp, rotate));
 }
 
 void		play(t_proc *e, int mode)
@@ -161,10 +58,7 @@ void		play(t_proc *e, int mode)
 	int				opp[2];
 	int				rotate;
 
-	buf.mtype = e->number;
-	opp[0] = -1;
-	opp[1] = -1;
-	rotate = 1;
+	init_play(opp, &rotate, &buf, e);
 	while (can_play(e, mode))
 	{
 		if (msgrcv(e->msqid, &buf, sizeof(buf.mtext), 4242, IPC_NOWAIT) != -1)
@@ -174,20 +68,11 @@ void		play(t_proc *e, int mode)
 		{
 			if (errno != ENOMSG)
 				break ;
-			find_opponent(e, opp);
-			send_position(e, opp, &buf);
-			dir = get_dir(e, opp, rotate);
+			dir = find_and_search_opp(e, opp, &buf, rotate);
 		}
 		else
-		{
-			opp[0] = (int)buf.mtext[0];
-			opp[1] = (int)buf.mtext[4];
-			dir = get_dir(e, opp, rotate);
-		}
-		if (dir != NOOPP)
-			move_player(dir, e);
-		usleep(TIME);
-		rotate = (rotate) ? 0 : 1;
+			dir = get_dir_opp(opp, &buf, e, rotate);
+		rotate = end_play(dir, e, rotate);
 	}
 	usleep(TIME);
 	delete_player(e);
