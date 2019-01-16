@@ -37,7 +37,7 @@
 # define TIME		500000
 # define CLASSIC	0
 # define ZOMBIE		1
-# define MODE		ZOMBIE
+# define MODE		CLASSIC
 
 typedef struct s_proc	t_proc;
 
