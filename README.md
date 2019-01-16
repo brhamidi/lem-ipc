@@ -2,7 +2,7 @@
 Sample board game with inter-process communication (IPC)
 
 
-# exmaple
+# example
 
 ```
 make && ./lemipc 42
