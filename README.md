@@ -1,6 +1,7 @@
+![OS](https://img.shields.io/badge/OS-linux-green.svg)
+
 # lem-ipc
 Sample board game with inter-process communication (IPC)
-
 
 # example
 
